@@ -6,6 +6,7 @@ import tools.jackson.databind.ObjectMapper;
 import woowacourse.payment.PaymentConfirmation;
 import woowacourse.payment.PaymentGateway;
 import woowacourse.payment.PaymentResult;
+import woowacourse.payment.client.dto.ConfirmRequest;
 
 /**
  * PaymentGateway 포트의 Toss 구현(어댑터). Toss 의 요청·응답·에러 포맷은 이 클래스 밖으로 새어 나가지 않는다(부패 방지 계층).
