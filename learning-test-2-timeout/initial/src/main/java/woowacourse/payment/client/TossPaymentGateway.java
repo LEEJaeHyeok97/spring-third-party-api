@@ -1,5 +1,6 @@
 package woowacourse.payment.client;
 
+import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -28,6 +29,7 @@ public class TossPaymentGateway implements PaymentGateway {
         confirmation.paymentKey(), confirmation.orderId(), confirmation.amount());
     var response = tossRestClient.post()
         .uri("/v1/payments/confirm")
+        .header("Idempotency-Key", confirmation.orderId())
         .contentType(MediaType.APPLICATION_JSON)
         // TODO: 재시도 시 중복 결제를 막도록 Idempotency-Key 헤더를 싣는다.
         //  키는 재시도 간 동일한 값이어야 한다(주문 식별자 등). 예: .header("Idempotency-Key", confirmation.orderId())
