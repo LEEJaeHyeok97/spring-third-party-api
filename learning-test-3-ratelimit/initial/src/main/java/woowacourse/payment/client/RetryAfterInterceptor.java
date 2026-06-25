@@ -25,7 +25,17 @@ public class RetryAfterInterceptor implements ClientHttpRequestInterceptor {
       HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
     // TODO: 응답이 429 이고 시도 횟수가 maxAttempts 미만이면, 이전 응답을 close() 하고 Retry-After 만큼 대기 후 재시도한다.
     // 지금은 재시도 없이 첫 응답을 그대로 반환하므로, 429 를 받으면 그대로 실패한다.
-    return execution.execute(request, body);
+    var response = execution.execute(request, body);
+    var attempt = 1;
+    while (response.getStatusCode().value() == 429 && attempt < maxAttempts) {
+      var waitSeconds = parseRetryAfterSeconds(response);
+      response.close();
+      sleepSeconds(waitSeconds);
+      response = execution.execute(request, body);
+      attempt++;
+    }
+
+    return response;
   }
 
   private long parseRetryAfterSeconds(ClientHttpResponse response) {
